@@ -1,6 +1,10 @@
 # The Unofficial Guide
 
-<!-- Replace this line with your name and which corpus you picked. -->
+Luming Fei — corpus: `campus_life`.
+
+Picked `campus_life` for unit 1 to get the pipeline working end to end
+without fighting messy chunk boundaries first. Planning to revisit with
+`advice_threads` or `city_guides` later as a harder follow-up.
 
 > **This file is your submission.** Fill it in as you go — most sections get
 > written during the milestone that produces them, not at the end.

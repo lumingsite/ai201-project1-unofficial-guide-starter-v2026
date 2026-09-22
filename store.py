@@ -63,7 +63,9 @@ class _OnnxEmbedder:
     def __init__(self):
         from chromadb.utils.embedding_functions import ONNXMiniLM_L6_V2
 
-        self._ef = ONNXMiniLM_L6_V2()
+        # CoreMLExecutionProvider crashes mid-batch on this machine
+        # (Intel Mac); CPU is the only provider that reliably works here.
+        self._ef = ONNXMiniLM_L6_V2(preferred_providers=["CPUExecutionProvider"])
 
     def encode(self, texts, show_progress_bar: bool = False):
         return [vector.tolist() for vector in self._ef(list(texts))]
