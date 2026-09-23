@@ -25,11 +25,14 @@ without fighting messy chunk boundaries first. Planning to revisit with
 
 ## What This Does
 
-<!-- Three or four sentences. Which corpus you picked, and the kinds of
-     questions your system answers. Write it for someone who has never seen
-     this repo.
-
-     Milestone 5. -->
+This is a retrieval-augmented question-answering system built on
+`campus_life`, a corpus of 88 short posts about student life at a
+university — dining halls, dorms, courses, and administrative rules. Ask it
+something like "how long is the wait at Kestrel Commons during lunch?" or
+"is CS 210 a heavy workload?" and it retrieves the relevant post(s), answers
+using only that text, and names the source file. Ask it something the
+corpus doesn't cover — like a World Cup result or a Rust syntax question —
+and it says so instead of guessing.
 
 ## Chunking Strategy
 
@@ -144,18 +147,29 @@ number that isn't doing any close calls yet.
 
 ## How I Used AI
 
-<!-- Two specific moments. For each: what you asked for, what came back, and
-     what you changed about it.
+**1.** Environment setup crashed with two unrelated build errors:
+`chroma-hnswlib` and `cryptography` both failed to compile from source under
+Python 3.13 on my Intel Mac. I had Claude dig into why, and it found that
+neither package ships a prebuilt wheel for cp313 on this platform (and the
+latest `cryptography` had dropped Intel-Mac wheels entirely). It installed
+Python 3.12 via `uv` and pinned `cryptography==45.0.7` to a version that
+still has an x86_64 wheel. Then `python app.py index` crashed separately —
+onnxruntime's CoreML execution provider errored out mid-batch. Claude traced
+that to `store.py::_embedder` defaulting to whatever providers were
+available, and forced `CPUExecutionProvider` explicitly. I didn't touch this
+code myself; I read the diagnosis, understood why it happened, and verified
+`index`/`ask` both ran cleanly afterward.
 
-     "I asked Claude to write the chunking function from my notes. It ignored
-     the overlap, so I added that myself" is the level of detail we're after.
-     "I used AI to help me code" is not.
-
-     Milestone 5. -->
-
-**1.**
-
-**2.**
+**2.** For Milestone 3 I asked Claude to design and implement a chunker for
+`campus_life` in `chunker.py`. Instead of guessing a chunk size, it measured
+paragraph lengths across the corpus first (title lines are consistently
+10-47 characters, and everything else is longer), and used that to justify
+merging paragraphs forward until each chunk passes 100 characters — so the
+title never ends up as a lone fragment. I checked the five sample chunks it
+printed against the "could someone answer a question from just this"
+standard from the milestone myself before accepting it, and re-ran all five
+test questions to confirm retrieval still found the right documents after
+the change.
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
