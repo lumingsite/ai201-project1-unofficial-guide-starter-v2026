@@ -28,6 +28,7 @@ QUESTIONS = [
     {"question": "How many hours a week does CS 210 take outside of class?", "expects": "8"},
     {"question": "How often does the campus shuttle run on weekends?", "expects": "40"},
     {"question": "What should I know about Kestrel Commons before going for lunch?", "expects": "wilts"},
+    {"question": "What time does Halden Hall close, and is that easy to miss?", "expects": "7:00pm"},
 ]
 
 # Questions from a different world entirely. Your gate should refuse all five.

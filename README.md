@@ -123,13 +123,13 @@ Sources retrieved: course_cs_210_workload.txt, course_econ_101.txt, course_stat_
 
 **My relevance cutoff:** 0.6 (the starter default — kept as-is)
 
-Ran all 5 test questions and all 5 `OUT_OF_SCOPE` questions through
+Ran all 6 test questions and all 5 `OUT_OF_SCOPE` questions through
 `python app.py retrieve` and recorded the best distance for each. The two
 groups don't just have a gap, they're nowhere near each other: every
 in-corpus question lands under 0.38, every out-of-scope question lands over
 0.80. The starter's default cutoff of 0.6 sits comfortably in that empty
 middle, and moving it up or down within roughly 0.4-0.75 wouldn't change a
-single verdict on these 10 questions — so I kept it rather than tuning a
+single verdict on these 11 questions — so I kept it rather than tuning a
 number that isn't doing any close calls yet.
 
 | Question | In corpus? | Best distance |
@@ -139,6 +139,7 @@ number that isn't doing any close calls yet.
 | How many hours a week does CS 210 take outside of class? | Yes | 0.269 |
 | How often does the campus shuttle run on weekends? | Yes | 0.180 |
 | What should I know about Kestrel Commons before going for lunch? | Yes | 0.376 |
+| What time does Halden Hall close, and is that easy to miss? | Yes | 0.347 |
 | What is the capital of Mongolia? | No | 0.825 |
 | How do I change the oil in a diesel engine? | No | 0.923 |
 | Who won the 1994 World Cup? | No | 0.874 |
@@ -186,9 +187,17 @@ the change.
 
 ## Run Log — Before
 
-No `scorer.py` yet, so these verdicts are me reading the raw output in
-`results/run_2026-09-23_1911_before.md` and judging each question by hand
-against its `expects` phrase.
+`scorer.py::judge` scores each answer with `rapidfuzz.fuzz.partial_ratio`
+against its `expects` phrase (threshold 85, both strings whitespace-stripped
+first). Diagnosis behind that design: an early version without whitespace
+stripping scored "closes at 7:00pm" (correct) at 83.3 against `expects =
+"7:00pm"` — a `fail` — for the same reason it would score "closes at
+8:00pm" (a wrong digit) at the same 83.3. Both are edit-distance 1 over a
+6-character string, so raw partial_ratio can't tell a formatting difference
+from a factual one. Stripping whitespace from both sides before comparing
+fixed the false negative (spaced "7:00 pm" now scores 100) without moving
+the wrong-digit case, which stays at 83.3 and correctly stays below
+threshold.
 
 Criteria 3, 4, and 5 are single deterministic measurements (retrieval and
 the gate don't change between runs on unchanged code), so the same number
@@ -197,16 +206,13 @@ times — same reasoning the starter gives for criterion 3.
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
-| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 1. Retrieved chunk contains the answer | 5 of 6 | 6/6 | 6/6 | 6/6 | MET |
+| 2. Every answer names a source | 6 of 6 | 6/6 | 6/6 | 6/6 | MET |
 | 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
 | 4. Chunks read as complete thoughts | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
-| 5. Main+followup retrieved together | 4 of 5 | 1/1 | 1/1 | 1/1 | MET* |
+| 5. Main+followup retrieved together | 2 of 2 | 2/2 | 2/2 | 2/2 | MET |
 
-\* Only one question in `questions.py` (Q5, Kestrel Commons) actually
-exercises the main+followup pattern this criterion is about, so the
-denominator is 1, not 5 — a coverage gap in my question set, not a
-retrieval failure. Noted here rather than hidden.
+Full per-run output: `results/run_2026-09-23_1936_before.md`.
 
 **Criterion 1 — real output** (`generate.py::answer_from_chunks`, question
 "How many hours a week does CS 210 take outside of class?", run 1):
@@ -231,13 +237,16 @@ What is the capital of Mongolia? -> refused (best distance 0.825)
 How do I write a for loop in Rust? -> refused (best distance 0.877)
 ```
 
-**Criterion 5 — real output** (`store.py::search`, question 5, run 1 —
-sources retrieved list shows both halves):
+**Criterion 5 — real output** (`store.py::search`, both questions retrieve
+both halves of their dining-hall pair):
 
 ```
-Sources retrieved: dining_halden_hall.txt, dining_kestrel_commons.txt,
+Q5 sources: dining_halden_hall.txt, dining_kestrel_commons.txt,
 dining_kestrel_commons_followup.txt, dining_north_kitchen.txt,
 dining_north_kitchen_followup.txt
+
+Q6 sources: dining_halden_hall.txt, dining_halden_hall_followup.txt,
+dining_pellew_dining_hall.txt, dining_pellew_dining_hall_followup.txt
 ```
 
 ## Verdicts

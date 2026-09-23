@@ -19,14 +19,15 @@ pipeline earns credit; *"80% seemed reasonable"* does not.
 
 ## 1. Retrieved chunks contain the answer
 
-For at least 4 of my 5 test questions, the retrieved chunks include one that
+For at least 5 of my 6 test questions, the retrieved chunks include one that
 contains the answer.
 
-**Why this target:** Four of my five questions each map to one specific
+**Why this target:** Four of my six questions each map to one specific
 document with a clear factual answer (wait times, workload hours, shuttle
-frequency). The fifth (textbooks) draws on advice spread across a single
-short post, which is the one I'd expect to be shakier if retrieval pulls in
-an unrelated chunk instead.
+frequency). The other two ("what should I know about Kestrel Commons" and
+"what time does Halden Hall close") pull from a main post plus its
+follow-up rather than a single document, which is the pattern I'd expect to
+be shakier if retrieval only grabs one half.
 
 ---
 
@@ -34,7 +35,7 @@ an unrelated chunk instead.
 
 Every answer the system produces names at least one source document.
 
-**Why this target:** This one is 5 of 5, not 4 of 5, because it isn't a
+**Why this target:** This one is 6 of 6, not 5 of 6, because it isn't a
 retrieval-quality question — it's a check that generate.py always prints the
 source line it's told to print. The only way this fails is a code bug in the
 answer-formatting step, not a hard question, so there's no reason to leave
@@ -80,16 +81,20 @@ rare longer post with two unrelated facts crammed together.
 
 ## 5. Both the original post and its follow-up get retrieved together
 
-For questions about a dining hall or housing building that has both a main
-post and a `_followup` document, at least 4 of 5 such questions retrieve
-chunks from both documents. Question 5 in `questions.py` ("What should I
-know about Kestrel Commons before going for lunch?") is the one this
-criterion is measured against.
+For questions about a dining hall that has both a main post and a
+`_followup` document, both questions retrieve chunks from both documents.
+Questions 5 and 6 in `questions.py` ("What should I know about Kestrel
+Commons before going for lunch?" and "What time does Halden Hall close,
+and is that easy to miss?") are what this criterion is measured against.
 
-**Why this target:** Several topics (Kestrel Commons, Morrow House, etc.)
-are split across a main post and a follow-up reply. A system that only
-finds one half is missing context a real student would want, so I want to
-check retrieval isn't systematically dropping one side.
+**Why this target:** Several dining-hall topics (Kestrel Commons, Halden
+Hall, and others) are split across a main post and a follow-up reply. A
+system that only finds one half is missing context a real student would
+want, so I want to check retrieval isn't systematically dropping one side.
+Only two of my six questions actually exercise this pattern, so the target
+is "2 of 2" rather than a fraction with room for a miss — with a
+denominator this small, "at least 4 of 5" from the brief's phrasing
+doesn't fit, and inflating the count would just be padding.
 
 
 
