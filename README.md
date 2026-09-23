@@ -58,6 +58,13 @@ chunks instead of one — building info in the first, the good/bad/laundry
 facts grouped in the second — which is closer to how a person would
 actually look something up in it.
 
+(Out of curiosity, not because it was required: I ran the same
+`split_documents` against `advice_threads` — a different corpus, one I
+didn't pick — and it split each reply into its own chunk cleanly, without
+any advice_threads-specific code. That's because the merge rule is a
+general principle, not a campus_life hack: it reacts to paragraph length,
+and advice_threads' replies happen to be paragraph-separated too.)
+
 ## Sample Chunks
 
 <!-- Five chunks, pasted as text. Label each one and name the file it came from
