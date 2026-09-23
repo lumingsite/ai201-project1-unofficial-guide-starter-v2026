@@ -186,27 +186,59 @@ the change.
 
 ## Run Log — Before
 
-<!-- Your five criteria, three runs each. `python run_eval.py --label before`
-     runs the questions, puts the OUT_OF_SCOPE ones through the gate, and
-     writes it all into results/ for you. Targets come from criteria.md; the
-     verdict column is your call.
+No `scorer.py` yet, so these verdicts are me reading the raw output in
+`results/run_2026-09-23_1911_before.md` and judging each question by hand
+against its `expects` phrase.
 
-     Criterion 3 is measured in one deterministic pass rather than three, so
-     the same number goes in all three run columns. That's correct, not lazy.
-
-     Milestone 1. -->
+Criteria 3, 4, and 5 are single deterministic measurements (retrieval and
+the gate don't change between runs on unchanged code), so the same number
+is repeated across all three run columns rather than re-measured three
+times — same reasoning the starter gives for criterion 3.
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. Chunks read as complete thoughts | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Main+followup retrieved together | 4 of 5 | 1/1 | 1/1 | 1/1 | MET* |
 
-<!-- Underneath, paste the REAL output for each criterion from one of your
-     runs — the actual text your system produced, not a description of it.
-     Name the file and function that produced it. -->
+\* Only one question in `questions.py` (Q5, Kestrel Commons) actually
+exercises the main+followup pattern this criterion is about, so the
+denominator is 1, not 5 — a coverage gap in my question set, not a
+retrieval failure. Noted here rather than hidden.
+
+**Criterion 1 — real output** (`generate.py::answer_from_chunks`, question
+"How many hours a week does CS 210 take outside of class?", run 1):
+
+```
+CS 210 takes 8 to 10 hours a week outside of class (course_cs_210_workload.txt).
+```
+
+**Criterion 2 — real output** (same function, "How often does the campus
+shuttle run on weekends?", run 1):
+
+```
+The campus shuttle runs every 40 minutes on weekends. 
+
+Source: transit_shuttle.txt
+```
+
+**Criterion 3 — real output** (`run_eval.py::check_out_of_scope`, cutoff 0.6):
+
+```
+What is the capital of Mongolia? -> refused (best distance 0.825)
+How do I write a for loop in Rust? -> refused (best distance 0.877)
+```
+
+**Criterion 5 — real output** (`store.py::search`, question 5, run 1 —
+sources retrieved list shows both halves):
+
+```
+Sources retrieved: dining_halden_hall.txt, dining_kestrel_commons.txt,
+dining_kestrel_commons_followup.txt, dining_north_kitchen.txt,
+dining_north_kitchen_followup.txt
+```
 
 ## Verdicts
 
