@@ -33,18 +33,27 @@ without fighting messy chunk boundaries first. Planning to revisit with
 
 ## Chunking Strategy
 
-**Chunk size:**
-**Overlap:**
+**Chunk size:** no fixed size — paragraph-based, merged until each chunk
+reaches at least 100 characters.
+**Overlap:** none.
 
-<!-- What about YOUR documents made you pick these numbers? Short posts and
-     long sectioned guides don't want the same chunking, and "800 seemed
-     reasonable" earns nothing. Point at something you noticed when you read
-     the documents in Milestone 1.
+The starter's 800-character fixed window never splits campus_life at all
+(88 documents in, 88 chunks out) because almost no post reaches 800
+characters. That's not wrong, but it's not right either — some posts hold
+several unrelated facts in one document. `housing_morrow_house.txt`, for
+example, has a building-history paragraph, a "the good" paragraph, a "the
+bad" paragraph, and a laundry/noise paragraph, all under one title. One
+fixed chunk mixes all four; a question about laundry cost would retrieve a
+chunk that's mostly about damp floors and cheap rent.
 
-     If you changed your mind partway through, say so and say why. That's worth
-     more than pretending you got it right first time.
-
-     Milestone 3. -->
+So `split_documents` (chunker.py) splits on blank-line paragraph breaks
+instead, then merges consecutive paragraphs — starting from the title line
+— until the running total passes 100 characters, so no chunk is a bare
+title fragment. Result: 88 documents become 143 chunks, averaging 194
+characters (shortest 100, longest 409). Morrow House now comes out as two
+chunks instead of one — building info in the first, the good/bad/laundry
+facts grouped in the second — which is closer to how a person would
+actually look something up in it.
 
 ## Sample Chunks
 
@@ -57,29 +66,44 @@ without fighting messy chunk boundaries first. Planning to revisit with
 
      Milestone 3. -->
 
-**Chunk 1** — source: `` — produced by: ``
+**Chunk 1** — source: `admin_add_drop_deadline.txt#0` — produced by: `chunker.py::split_documents`
 
 ```
+On the add/drop deadline
+
+You can add a course through the end of the second week. Dropping is a longer window — through the end of week six — but a drop after week two shows as a W on your transcript. Nothing anywhere on the registrar's site says this plainly, and students find out from each other.
 ```
 
-**Chunk 2** — source: `` — produced by: ``
+**Chunk 2** — source: `course_cs_340.txt#0` — produced by: `chunker.py::split_documents`
 
 ```
+CS 340 Databases
+
+I'm a junior and I've done this twice now. Format is lecture twice a week plus a project that runs the whole term. Assessment: one midterm and a final, both open-book. Lightly curved, usually two or three points.
 ```
 
-**Chunk 3** — source: `` — produced by: ``
+**Chunk 3** — source: `course_phys_130_exams.txt#0` — produced by: `chunker.py::split_documents`
 
 ```
+PHYS 130 Mechanics — assessment
+
+Three midterms, no final, plus a lab practical. Not curved, but the lowest midterm is dropped.
+
+The lab practical is worth 20% and almost nobody prepares for it.
 ```
 
-**Chunk 4** — source: `` — produced by: ``
+**Chunk 4** — source: `dining_verrill_street_grill_followup.txt#1` — produced by: `chunker.py::split_documents`
 
 ```
+Also worth saying: one register, so the queue is a single line no matter how busy. Nobody tells you this at orientation.
 ```
 
-**Chunk 5** — source: `` — produced by: ``
+**Chunk 5** — source: `housing_morrow_house.txt#1` — produced by: `chunker.py::split_documents`
 
 ```
+The good: cheapest housing tier by about $900 a year, and the singles are real singles.
+
+The bad: known damp problem on the ground floor; two rooms were taken offline in 2024.
 ```
 
 ## Sample Answer

@@ -80,24 +80,56 @@ def fallback_split(
     return chunks
 
 
+# campus_life posts run 178-549 characters and are written as short
+# paragraphs — a title line, then one paragraph per fact (what's good, what's
+# bad, laundry cost, noise level). Fixed 800-char windows never split any of
+# that (fallback_split turns 88 documents into 88 chunks), so a post like
+# Morrow House's stays one chunk even though it holds four unrelated facts.
+#
+# Splitting on blank lines fixes the "chunks too big" problem but creates a
+# new "too small" one: the title line alone ("Morrow House — what it's
+# actually like") is 10-47 characters and isn't a usable chunk on its own.
+# So paragraphs are merged, greedily, in document order, until each chunk
+# reaches MIN_CHUNK_CHARS — long enough to read as a complete thought,
+# without giving up the paragraph boundaries that separate distinct facts.
+MIN_CHUNK_CHARS = 100
+
+
 def split_documents(documents: list[Document]) -> list[Chunk]:
     """
-    Split documents into chunks. ⚠️ REPLACE THE BODY OF THIS IN MILESTONE 3.
-
-    Right now it just calls the fallback. That is the plain, generic behaviour
-    the brief is talking about.
-
-    When you write your own strategy, set `produced_by` to
-    "chunker.py::split_documents" so your README's Sample Chunks section names
-    the right function. `app.py chunks` prints that string for you.
-
-    Things worth thinking about before you write any code:
-      - Are your documents short posts or long guides?
-      - Is the useful information in one sentence, or spread over a paragraph?
-      - Would splitting on paragraph breaks keep more thoughts intact than
-        splitting on a character count?
+    Split documents on paragraph breaks, merging forward until each chunk
+    reaches MIN_CHUNK_CHARS. See the module comment above for why.
     """
-    return fallback_split(documents)
+    chunks: list[Chunk] = []
+    for doc in documents:
+        paragraphs = [p.strip() for p in doc.text.strip().split("\n\n") if p.strip()]
+
+        groups: list[list[str]] = []
+        buffer: list[str] = []
+        buffer_len = 0
+        for para in paragraphs:
+            buffer.append(para)
+            buffer_len += len(para)
+            if buffer_len >= MIN_CHUNK_CHARS:
+                groups.append(buffer)
+                buffer, buffer_len = [], 0
+        if buffer:
+            if groups:
+                groups[-1] = groups[-1] + buffer
+            else:
+                groups.append(buffer)
+
+        for i, group in enumerate(groups):
+            chunks.append(
+                Chunk(
+                    text="\n\n".join(group),
+                    source=doc.source,
+                    index=i,
+                    produced_by="chunker.py::split_documents",
+                )
+            )
+
+    return chunks
 
 
 def describe(chunks: list[Chunk]) -> str:
