@@ -40,10 +40,15 @@ QUESTIONS = [
 # the others. They cost no model calls: a refusal never reaches the model.
 OUT_OF_SCOPE = [
     "What is the capital of Mongolia?",
-    "How do I change the oil in a diesel engine?",
     "Who won the 1994 World Cup?",
     "What is the recommended dosage of ibuprofen for a headache?",
-    "How do I write a for loop in Rust?",
+    # The two below replaced "diesel oil change" and "Rust for-loop" in unit 2
+    # Milestone 4. Those two scored 0.80+ (nowhere near the 0.6 cutoff) --
+    # unrelated-domain questions never actually stress the gate. These two
+    # sound like campus_life topics but aren't covered, and land much closer
+    # to the boundary (0.60-0.68 at the old cutoff).
+    "What's the fee for renewing my student ID card?",
+    "What's the process for subletting my off-campus apartment over the summer?",
 ]
 
 

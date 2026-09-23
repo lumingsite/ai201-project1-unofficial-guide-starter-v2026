@@ -297,29 +297,50 @@ starts to blur.
 
 ## The Improvement
 
-**What I changed:**
+**What I changed:** Two things, tied together: (1) swapped two of the five
+`OUT_OF_SCOPE` questions — "diesel oil change" and "Rust for-loop", both
+completely unrelated domains — for near-miss questions that sound like
+campus_life topics but aren't covered ("student ID card renewal fee",
+"subletting an off-campus apartment"); (2) tightened the relevance cutoff
+in `config.py` from 0.6 to 0.5.
 
-**Why I picked it:**
-
-<!-- Connect it to a specific diagnosis above in one sentence. If you can't,
-     you picked a fix because it sounded impressive. -->
+**Why I picked it:** My Milestone 3 diagnosis found that criterion 3's old
+`OUT_OF_SCOPE` set never actually stressed the gate — every question scored
+0.80+ against a 0.6 cutoff, nowhere near the boundary. Testing the two new
+near-miss questions against the *old* cutoff exposed a real gap before I
+even changed anything: "student ID card renewal fee" scored 0.599 — just
+**under** the 0.6 cutoff, meaning the gate would have let a question the
+corpus doesn't cover through to the model. (The model's own grounding
+instruction caught it anyway and said it didn't have enough information —
+so the two-layer design worked, but the first layer, the one this
+criterion is actually about, didn't.) Lowering the cutoff to 0.5 sits below
+both near-miss distances (0.599, 0.644) while staying comfortably above the
+highest real in-corpus distance (0.376), so it closes the gap without
+costing any in-scope questions.
 
 ### Run Log — After
 
-<!-- Same format, same five criteria, three runs each.
-     `python run_eval.py --label after` -->
-
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 5 of 6 | 6/6 | 6/6 | 6/6 | MET |
+| 2. Every answer names a source | 6 of 6 | 6/6 | 6/6 | 6/6 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. Chunks read as complete thoughts | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Main+followup retrieved together | 2 of 2 | 2/2 | 2/2 | 2/2 | MET |
 
-**Did it help?**
+Full per-run output: `results/run_2026-09-23_1948_after.md`.
 
-<!-- Say plainly whether it did, and how you know. If it made things worse,
+**Did it help?** Yes, and I can point at exactly where: at the old 0.6
+cutoff, the student-ID question would have passed the gate (0.599 < 0.6);
+at the new 0.5 cutoff it's correctly refused (0.599 > 0.5), same for the
+subletting question (0.644 > 0.5). Criteria 1, 2, 4, and 5 are unchanged —
+the lower cutoff didn't cost any in-scope question, since the highest
+real-question distance (0.376) still sits well clear of it. Criterion 3's
+number looks identical before and after (5/5 both times), but the *test*
+behind that number is now real: the before-run's OUT_OF_SCOPE questions
+never came within 0.4 of the cutoff, so 5/5 there didn't mean much. The
+after-run's near-miss questions land within 0.14 of the cutoff on one of
+them, which is what "the gate actually holds" should look like.
      say that — a change that backfired, honestly reported, earns full credit
      and is more interesting than one that worked. What matters is that you can
      tell.
