@@ -22,9 +22,11 @@ pipeline earns credit; *"80% seemed reasonable"* does not.
 For at least 4 of my 5 test questions, the retrieved chunks include one that
 contains the answer.
 
-**Why this target:**
-<!-- e.g. "One of my questions is about a topic only two documents mention, so
-     I expect that one to be hard." -->
+**Why this target:** Four of my five questions each map to one specific
+document with a clear factual answer (wait times, workload hours, shuttle
+frequency). The fifth (textbooks) draws on advice spread across a single
+short post, which is the one I'd expect to be shakier if retrieval pulls in
+an unrelated chunk instead.
 
 ---
 
@@ -32,9 +34,11 @@ contains the answer.
 
 Every answer the system produces names at least one source document.
 
-**Why this target:**
-<!-- Why all five and not four? What about your setup makes that achievable —
-     or what would have to go wrong for it not to be? -->
+**Why this target:** This one is 5 of 5, not 4 of 5, because it isn't a
+retrieval-quality question — it's a check that generate.py always prints the
+source line it's told to print. The only way this fails is a code bug in the
+answer-formatting step, not a hard question, so there's no reason to leave
+room for a miss.
 
 ---
 
@@ -55,41 +59,32 @@ in at least 4 of 5 tries.
 
 ---
 
-## 4. Something about your chunks
+## 4. Chunks read as complete thoughts
 
-<!-- YOU WRITE THIS ONE.
+At least 4 of 5 sampled chunks (`python app.py chunks -n 5`) read as a
+complete thought: the chunk does not start with a lowercase continuation
+word (e.g. "and", "but", "which") and does not end on a trailing comma,
+semicolon, or conjunction.
 
-     How would you know if your chunks were the right size? Name something
-     countable or observable.
-
-     Examples of the right shape — don't copy these, they should come from
-     what you actually saw in Milestone 3:
-       - "At least 4 of 5 sampled chunks read as a complete thought, with no
-          sentence cut in half at either end."
-       - "No chunk is shorter than 200 characters, since anything below that
-          in my corpus turned out to be a heading with no content under it." -->
-
-
-
-**Why this target:**
-
-
+**Why this target:** My documents are short (about 178–549 characters each)
+and campus_life uses `fallback_split`, so most documents become a single
+chunk already. I expect this to hold almost every time — the risk is the
+rare longer post with two unrelated facts crammed together.
 
 ---
 
-## 5. Your choice
+## 5. Both the original post and its follow-up get retrieved together
 
-<!-- YOU WRITE THIS ONE TOO.
+For questions about a dining hall or housing building that has both a main
+post and a `_followup` document, at least 4 of 5 such questions retrieve
+chunks from both documents. Question 5 in `questions.py` ("What should I
+know about Kestrel Commons before going for lunch?") is the one this
+criterion is measured against.
 
-     Pick something you actually care about getting right. It could be about
-     speed, about refusals, about a particular kind of question your corpus
-     handles badly, about source attribution being correct rather than merely
-     present — anything, as long as it names a number or an observable
-     outcome. -->
-
-
-
-**Why this target:**
+**Why this target:** Several topics (Kestrel Commons, Morrow House, etc.)
+are split across a main post and a follow-up reply. A system that only
+finds one half is missing context a real student would want, so I want to
+check retrieval isn't systematically dropping one side.
 
 
 
