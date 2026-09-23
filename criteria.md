@@ -53,9 +53,14 @@ in at least 4 of 5 tries.
      what happened into your run log. Swap them for your own if you'd rather —
      just keep five of them, or the "4 of 5" above has nothing to be 4 of. -->
 
-**Why this target:**
-<!-- What did your distances look like when you set the cutoff in Milestone 4?
-     Was there a clean gap, or did the two groups overlap? -->
+**Why this target:** Not a clean gap — a wide-open one. All 5 in-corpus
+questions came back under 0.38 (best distance); all 5 OUT_OF_SCOPE questions
+came back over 0.80. Nothing landed in the 0.4-0.75 range in between, so the
+default cutoff of 0.6 isn't a close call here, and I'd expect the gate to hit
+5 of 5 rather than 4 of 5 on these particular ten questions. I kept the
+target at 4 of 5 anyway rather than claiming 5 of 5, since a wider or messier
+set of out-of-scope questions than these five could still land closer to the
+boundary.
 
 ---
 

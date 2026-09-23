@@ -108,30 +108,39 @@ The bad: known damp problem on the ground floor; two rooms were taken offline in
 
 ## Sample Answer
 
-<!-- One complete question and answer, pasted as text, with the source line
-     visible. Milestone 4. -->
-
-**Question:**
+**Question:** How many hours a week does CS 210 take outside of class?
 
 **Answer:**
 
 ```
+CS 210 takes 8 to 10 hours a week outside of class (source: course_cs_210_workload.txt).
+
+Sources retrieved: course_cs_210_workload.txt, course_econ_101.txt, course_stat_150.txt, course_stat_150_workload.txt, money_jobs.txt
 ```
 
-**My relevance cutoff:**
+**My relevance cutoff:** 0.6 (the starter default — kept as-is)
 
-<!-- The number you set in config.py, and how you got there.
-
-     You ran five questions your corpus covers and the five in OUT_OF_SCOPE
-     that it clearly doesn't, and wrote down the best distance for each. What
-     did those two groups look like? Where was the gap? Put the actual numbers
-     here — the table below wants all ten rows.
-
-     Milestone 4. -->
+Ran all 5 test questions and all 5 `OUT_OF_SCOPE` questions through
+`python app.py retrieve` and recorded the best distance for each. The two
+groups don't just have a gap, they're nowhere near each other: every
+in-corpus question lands under 0.38, every out-of-scope question lands over
+0.80. The starter's default cutoff of 0.6 sits comfortably in that empty
+middle, and moving it up or down within roughly 0.4-0.75 wouldn't change a
+single verdict on these 10 questions — so I kept it rather than tuning a
+number that isn't doing any close calls yet.
 
 | Question | In corpus? | Best distance |
 |---|---|---|
-|  |  |  |
+| How long is the wait at Kestrel Commons during the lunch rush? | Yes | 0.198 |
+| How late is it noisy in Morrow House on weekends, and are there enforced quiet hours? | Yes | 0.146 |
+| How many hours a week does CS 210 take outside of class? | Yes | 0.269 |
+| How often does the campus shuttle run on weekends? | Yes | 0.180 |
+| What should I know about Kestrel Commons before going for lunch? | Yes | 0.376 |
+| What is the capital of Mongolia? | No | 0.825 |
+| How do I change the oil in a diesel engine? | No | 0.923 |
+| Who won the 1994 World Cup? | No | 0.874 |
+| What is the recommended dosage of ibuprofen for a headache? | No | 0.803 |
+| How do I write a for loop in Rust? | No | 0.877 |
 
 ## How I Used AI
 
