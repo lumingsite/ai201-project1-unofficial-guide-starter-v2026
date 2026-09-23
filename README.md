@@ -356,17 +356,79 @@ them, which is what "the gate actually holds" should look like.
 
 ## What's Still Broken
 
-<!-- For each criterion still missed after your fix: what you'd do about it,
-     and why you stopped where you did.
+Nothing was ever MISSED, before or after the fix, so there's no failure to
+patch in the usual sense. What's still open is the weakness I already
+flagged rather than fixed:
 
-     "I ran out of time" is fine if it's true. Pretending nothing is left is
-     not.
+- **Criterion 5's denominator is 2.** "2 of 2" held on both runs, but two
+  questions passing twice each isn't strong evidence about the system in
+  general — it's evidence that retrieval isn't obviously broken for this
+  pattern. Fixing this properly means writing 3-4 more main+followup
+  questions across the other dining halls (Pellew, The Atrium, Verrill
+  Street Grill, The Ridgeway Café all have the same main+followup
+  structure) and re-running. I stopped because Milestone 4 asked for one
+  change, measured properly, and I'd already picked the gate/cutoff fix —
+  stacking a second change in the same unit would have made it harder to
+  tell which one moved which number.
 
-     Milestone 5. -->
+- **Criterion 4's "5 of 5" is against the same 5 fixed chunks every time**,
+  since `app.py chunks -n 5` isn't a random sample. I never built a way to
+  sample chunks randomly, so this criterion has only ever been checked
+  once, not five separate times across the corpus's 143 chunks. I stopped
+  because building a random sampler felt like scope creep for a corpus this
+  small and this uniform (178-549 characters, similar structure
+  throughout) — but I'm flagging it rather than letting "5 of 5" imply more
+  coverage than it has.
+
+- **The near-miss OUT_OF_SCOPE set is still just two questions** (student
+  ID renewal, subletting) out of five. I found these by hand, checking
+  distances one at a time. A more thorough version of this fix would
+  generate a larger batch of plausible-sounding-but-uncovered questions and
+  find the actual worst case rather than the first two I happened to try.
 
 ## What I'd Do Differently
 
-<!-- Knowing what you know now — which of your five criteria would you write
-     differently, and why?
+**Criterion 1** I'd tighten to 6 of 6, not 5 of 6. Every run came out 6/6
+with zero misses across 18 total attempts (6 questions × 3 runs), so the
+one-miss cushion never did anything — it was room I never needed, on a
+corpus small and clean enough that I should have expected that going in.
 
-     Milestone 5. -->
+**Criterion 5** I'd write with an explicit denominator from the start
+instead of borrowing the "4 of 5" phrasing from the brief's other examples.
+Writing "2 of 2" after the fact, once I knew how many questions actually
+fit the pattern, is honest but backwards — a criterion written in unit 1
+should commit to a number before seeing whether the pattern even shows up
+enough times to have five of anything.
+
+**Criterion 3** is the one I'm most satisfied with, precisely because I
+didn't get it right the first time — the unit 1 version (five
+unrelated-domain questions) looked fine until Milestone 4's diagnosis
+showed it wasn't testing anything. If I were starting over, I'd write
+criterion 3 to require at least one near-miss question from the start,
+rather than needing a diagnosis to discover the original set never
+touched the boundary.
+
+## How I Used AI (continued — Unit 2)
+
+**3.** After building `scorer.py` with rapidfuzz, one question (Halden
+Hall's closing time) failed intermittently — 2 of 3 runs passed, 1 failed,
+even though all three answers were factually correct. I asked Claude to
+figure out why instead of just lowering the fuzzy-match threshold. It
+found that `partial_ratio` scored a spacing difference ("7:00pm" vs
+"7:00 pm") identically to a wrong-digit difference ("7:00pm" vs "8:00pm") —
+both are edit-distance 1 over a 6-character string — and confirmed this by
+computing both scores against the real model output before proposing a
+fix. The fix it suggested (strip whitespace from both sides before
+comparing) fixed the spacing case without also accepting the wrong-digit
+case, which I checked by rerunning both through the scorer before trusting
+it.
+
+**4.** For Milestone 4, I asked Claude to help find out whether my
+relevance cutoff was actually being tested near its boundary. It pointed
+out that all five of my original `OUT_OF_SCOPE` questions were from
+completely unrelated domains (world capitals, car maintenance) and
+proposed testing questions that merely *sound* like campus topics instead.
+It generated several candidates and measured each one's actual distance
+against the live index before I picked two to keep — one of which (student
+ID renewal, 0.599) turned out to sit just under the old 0.6 cutoff, which
+is the finding that justified lowering it to 0.5.
