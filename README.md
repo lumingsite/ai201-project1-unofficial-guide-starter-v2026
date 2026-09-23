@@ -251,14 +251,13 @@ dining_pellew_dining_hall.txt, dining_pellew_dining_hall_followup.txt
 
 ## Verdicts
 
-<!-- MET or MISSED for each of the five, against the target you wrote last
-     unit — not a new one. Plus a sentence on how you decided. That sentence
-     matters most where it was close.
-
-     If your target said 4 of 5 and your runs came out 4, 3, 4, that's a MISS.
-     The target has to hold, not show up occasionally.
-
-     Milestone 2. -->
+| # | Criterion | Verdict | How I decided |
+|---|---|---|---|
+| 1 | Retrieved chunk contains the answer (target: 5 of 6) | MET | All 6 questions passed the scorer on all 3 runs (18/18). The target held with room to spare, not just on one lucky pass. |
+| 2 | Every answer names a source (target: 6 of 6) | MET | Every answer across all 3 runs had a source line — read them all directly in `results/run_2026-09-23_1936_before.md` rather than trusting the scorer for this one, since naming a source is a formatting check, not a fuzzy-match one. |
+| 3 | Gate stops out-of-corpus questions (target: 4 of 5) | MET | 5/5 refused, and the best distance for every out-of-scope question (0.80-0.92) sat far above the 0.6 cutoff — not a close call, so I'm confident this holds beyond just this one measurement. |
+| 4 | Chunks read as complete thoughts (target: 4 of 5) | MET | Read all 5 chunks from `app.py chunks -n 5` by hand; none started or ended mid-sentence. `chunks -n 5` returns the same 5 chunks every time (not a random sample), so this MET is really "5 of the same 5 chunks," not "5 of a fresh draw" — worth knowing if I ever add more chunks and re-check. |
+| 5 | Main+followup retrieved together (target: 2 of 2) | MET | Both questions pulled chunks from both halves on all 3 runs. But the denominator is 2 — I'm calling this MET honestly, not confidently. Two questions passing twice each is weak evidence for a claim about "the system" in general; it tells me retrieval isn't obviously broken for this pattern, not that it's reliably solved. 
 
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
