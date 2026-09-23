@@ -269,23 +269,31 @@ dining_pellew_dining_hall.txt, dining_pellew_dining_hall_followup.txt
 
 ## Diagnoses
 
-<!-- For each miss: which stage caused it, and how. The stage alone isn't
-     enough — you need the mechanism.
+No misses — all five criteria came out MET on the before-run. Nothing to
+trace back to a pipeline stage.
 
-     Not a diagnosis: "Question 3 didn't work."
-     A diagnosis:     "Question 3 asks about laundry costs. The answer is in
-                       one sentence that got split across two chunks, so
-                       neither chunk on its own contains it."
+Being honest about whether the targets were too safe: yes, for one of them.
+**Criterion 3** (the relevance gate) is the loosest test in the set. My five
+`OUT_OF_SCOPE` questions — capital of Mongolia, changing diesel oil, the 1994
+World Cup, ibuprofen dosage, a Rust for-loop — aren't just outside the
+corpus, they're from a completely different domain than anything
+campus_life touches. The best distance for every one of them landed at 0.80
+or higher, nowhere near the 0.6 cutoff, so the gate was never actually
+tested near its boundary. A genuinely hard out-of-scope question would be
+one that *sounds* like it belongs — something about a different school's
+policies, or a campus-life topic this corpus doesn't happen to cover (dorm
+policy at a school this corpus never mentions, say) — close enough in
+subject that it might land nearer the cutoff instead of far past it.
 
-     The five stages: loading → chunking → embedding → retrieval → generation.
+Criteria 1 and 4 have the same shape of looseness in miniature: 6/6 against
+a 5/6 target, and 5/5 against a 4/5 target, both with a full point of slack
+that six real test questions and five fixed chunks never came close to
+using.
 
-     Look for a pattern. If three misses all ask about numbers, that's one
-     problem, not three.
-
-     Missed nothing? Say so, then say honestly whether your targets were set
-     low, and which one you'd tighten and to what.
-
-     Milestone 3. -->
+If I were tightening one thing, it'd be criterion 3: swap one or two of the
+`OUT_OF_SCOPE` questions for near-miss ones in the same general subject area
+as campus_life, and see whether the cutoff still holds a clean gap or
+starts to blur.
 
 ## The Improvement
 
